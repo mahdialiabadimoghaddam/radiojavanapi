@@ -1,5 +1,5 @@
 from typing import List, Optional, Union
-from pydantic import BaseModel, HttpUrl
+from pydantic import BaseModel, ConfigDict, Field, HttpUrl, field_validator
 
 class ShortUser(BaseModel):
     thumbnail: HttpUrl
@@ -136,6 +136,15 @@ class Video(RJBaseModel):
     artist_tags: List[str] = []
     related_videos: List[ShortData] = []
 
+class SyncedTrack(BaseModel):
+    """A track entry with its start time in a Radio Javan podcast."""
+
+    time: float
+    text: str
+    # Radio Javan supplies this numeric value, but its exact semantics are undocumented.
+    mp3: Optional[int] = None
+
+
 class Podcast(RJBaseModel):
     date: str
     short_date: str
@@ -145,8 +154,33 @@ class Podcast(RJBaseModel):
     thumbnail: HttpUrl
     plays: int
     show_permlink: Optional[str] = ""
-    tracklist: Optional[str] = []
+    tracklist: Optional[str] = None
+    # Additional fields returned by the newer Play API.
+    podcast_artist: Optional[str] = None
+    explicit: Optional[bool] = None
+    date_added: Optional[str] = None
+    premium_only: Optional[bool] = None
+    show_premium_badge: Optional[bool] = None
+    sample_start: Optional[float] = None
+    preview_link: Optional[HttpUrl] = None
+    photo_large: Optional[HttpUrl] = None
+    photo_240: Optional[HttpUrl] = None
+    bg_colors: List[str] = Field(default_factory=list)
+    artist_farsi: Optional[str] = None
+    title_farsi: Optional[str] = None
+    lufs: Optional[float] = None
+    comments_count: Optional[int] = None
+    comments_count_pretty: Optional[str] = None
+    type: Optional[str] = None
+    tracklist_synced: List[SyncedTrack] = Field(default_factory=list)
     related_podcasts: List[ShortData] = []
+
+    model_config = ConfigDict(extra="allow")
+
+    @field_validator("tracklist_synced", mode="before")
+    @classmethod
+    def empty_synced_tracklist_when_missing_or_null(cls, value):
+        return value or []
 
 class Artist(BaseModel):
     name: str

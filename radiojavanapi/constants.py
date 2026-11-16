@@ -1,5 +1,19 @@
 API_DOMAIN = "https://rj-deskcloud.com/api2/{}"
 
+# Current Radio Javan web API; newer podcast records may include synchronized tracks.
+PLAY_API_DOMAIN = "https://play.radiojavan.com/api/p/{}"
+
+PLAY_API_HEADERS = {
+    "Accept": "application/json, text/plain, */*",
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+        "(KHTML, like Gecko) Chrome/124.0 Safari/537.36"
+    ),
+    "Referer": "https://play.radiojavan.com/",
+    "Origin": "https://play.radiojavan.com",
+    "X-Requested-With": "XMLHttpRequest",
+}
+
 BASE_HEADERS = {
     'Accept': 'application/json, text/plain, */*',
     'Accept-Language': 'en-US',
